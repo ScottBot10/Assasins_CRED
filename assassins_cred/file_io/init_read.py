@@ -75,7 +75,7 @@ def from_csv(file: str) -> t.Dict[str, Grade]:
                 grades[row[CSV_GRADE]] = Grade(int(row[CSV_GRADE]))
             grade = grades[row[CSV_GRADE]]
 
-            full_class = f"{row[CSV_GRADE]}{row[CSV_CLASS]}"
+            full_class = row[CSV_GRADE] + row[CSV_CLASS]
 
             if full_class not in classes.keys():
                 clazz = Class(row[CSV_GRADE], row[CSV_CLASS])

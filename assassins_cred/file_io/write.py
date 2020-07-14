@@ -1,7 +1,7 @@
 import csv
 import typing as t
 
-from ..core import constants
+from .. import constants
 from ..school import Grade
 from ..util.school import unpack_students
 
@@ -19,11 +19,13 @@ def write_people(grades: t.Sequence[Grade], file: str) -> None:
         csv_writer.writerow(constants.people_fieldnames)
         rows = [
             (
-                student.full_name,
-                student.clazz.name,
-                student.email,
+                student.first_name,
+                student.surname,
+                student.clazz.grade_name,
+                student.clazz.class_name,
                 student.code,
-                student.target,
+                student.target.first_name if student.target is not None else None,
+                student.target.surname if student.target is not None else None,
                 student.is_dead,
                 student.has_killed
             )

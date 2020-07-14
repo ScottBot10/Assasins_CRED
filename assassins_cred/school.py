@@ -1,6 +1,7 @@
 import typing as t
 
-from .core import constants
+from . import constants
+from .util.school import full_name
 
 
 class Student:
@@ -34,13 +35,16 @@ class Student:
 
         self.clazz: t.Optional[Class] = grade_class
 
+    def __repr__(self):
+        return self.full_name
+
+    def __str__(self):
+        return self.__repr__()
+
     @property
     def full_name(self) -> str:
         if self._full_name is None:
-            self._full_name = f"{self.first_name} "
-            if self.middle_names:
-                self._full_name += f"{' '.join(self.middle_names)} "
-            self._full_name += str(self.surname)
+            self._full_name = full_name(self.first_name, self.surname, self.middle_names)
         return self._full_name
 
     @property
@@ -49,7 +53,7 @@ class Student:
             self._email = self._make_email()
         return self._email
 
-    def _make_email(self):
+    def _make_email(self) -> str:
         return (
             f"{self.first_name[0].lower()}"
             f"{self.surname.lower().replace('-', '').replace(' ', '')}@"
@@ -61,7 +65,6 @@ class Class:
     """
     Simple class respresenting a school class e.g. 10A 12B 8C
     """
-
     def __init__(self, grade_name: str, class_name: str, students: t.Optional[t.Sequence[Student]] = None,
                  grade: t.Optional = None):
         """
@@ -73,14 +76,18 @@ class Class:
         self.grade_name = grade_name
         self.name = self.grade_name + self.class_name
 
-        self.students = [] if students is None else students
+        self.student_dict = {} if students is None else students
 
         self.grade = grade
 
     def add_student(self, student: Student):
         if student.clazz is None:
             student.clazz = self
-        self.students.append(student)
+        self.student_dict[student.full_name] = student
+
+    @property
+    def students(self) -> list:
+        return self.student_dict.values()
 
     @staticmethod
     def _sort_key(student: Student):
@@ -90,8 +97,8 @@ class Class:
             ' '.join(split[:-1])
         )
 
-    def sort_students(self):
-        self.students.sort(key=self._sort_key)
+    def sort_students(self) -> None:
+        self.student_dict = dict(sorted(self.student_dict.items(), key=lambda x: self._sort_key(x[1])))
 
 
 class Grade:
@@ -107,12 +114,16 @@ class Grade:
         """
         self.grade = grade
 
-        self.classes = [] if classes is None else classes
+        self.class_dict = {} if classes is None else classes
 
-    def add_class(self, clas: Class):
-        if clas.grade is None:
-            clas.grade = self
-        self.classes.append(clas)
+    def add_class(self, clazz: Class):
+        if clazz.grade is None:
+            clazz.grade = self
+        self.class_dict[clazz.name] = clazz
+
+    @property
+    def classes(self) -> list:
+        return list(self.class_dict.values())
 
     @staticmethod
     def _sort_key(clazz: Class):
@@ -121,5 +132,5 @@ class Grade:
             clazz.class_name
         )
 
-    def sort_classes(self):
-        self.classes.sort(key=self._sort_key)
+    def sort_classes(self) -> None:
+        self.class_dict = dict(sorted(self.class_dict.items(), key=lambda x: self._sort_key(x[1])))

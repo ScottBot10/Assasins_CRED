@@ -1,7 +1,7 @@
 import typing as t
 
 from . import constants
-from .mail.school import full_name
+from .util.school import full_name
 
 
 class Student:
@@ -58,11 +58,12 @@ class Student:
         return self._make_email(True)
 
     def _make_email(self, with_domain=False) -> str:
-        return (
+        email = (
             f"{self.first_name[0].lower()}"
             f"{self.surname.lower().replace('-', '').replace(' ', '')}"
-            f"{constants.email_domain}" if with_domain else ''
         )
+        email += f"@{constants.Email.email_domain}" if with_domain else ''
+        return email
 
 
 class Class:

@@ -59,10 +59,7 @@ def full_name(first_name: str, surname: str, middle_names=None):
 
 
 def email_student_dict(students: t.Sequence[Student]) -> t.Dict[str, Student]:
-    return {
-        student.email: student
-        for student in students
-    }
+    return {student.email: student for student in students}
 
 
 def dict_str_grade(grades: t.Sequence[Grade]) -> t.Dict[str, Grade]:

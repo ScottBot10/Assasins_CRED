@@ -6,14 +6,14 @@ import sys
 import typing as t
 from email.message import EmailMessage
 
-from assassins_cred.mail.config import Config
 from easyimap.easyimap import MailObj
 from easyimap.easyimap import _parse_email as parse_email
 
 from assassins_cred.constants import Email
 from assassins_cred.school import Student
+from assassins_cred.util.config import Config
 
-EMAIL_ADDRESS = re.compile(r"<(?P<from>.+)> (?P<email>(?P<address>[a-zA-Z.]+)@(?P<domain>[a-zA-Z.]+))")
+EMAIL_ADDRESS = re.compile(r"(?P<from>.+) <(?P<email>(?P<address>[a-zA-Z.]+)@(?P<domain>[a-zA-Z.]+))>")
 
 
 def clear_inbox(email, password, mail_box="Inbox") -> None:
@@ -64,7 +64,8 @@ def send_to_each(students: t.Sequence[Student],
                  from_address: str,
                  smtp: smtplib.SMTP = None,
                  to_address=None,
-                 password: str = None) -> None:
+                 password: str = None,
+                 format_kws=None) -> None:
     for student in students:
         send_email(
             to_address=to_address or f"{student.email}@{Email.email_domain}",
@@ -72,7 +73,7 @@ def send_to_each(students: t.Sequence[Student],
             title=title,
             body=body.format(
                 student=student,
-                from_email=email_address),
+                **format_kws),
             smtp=smtp,
             password=password
         )
@@ -91,6 +92,8 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                 student = students[address]
                 if not student.has_killed:
                     if not student.is_dead:
+                        print(student.target.code)
+                        print(mail.body.lower().strip())
                         if student.target.code in mail.body.lower().strip():
                             send_email(
                                 to_address=student.full_email,

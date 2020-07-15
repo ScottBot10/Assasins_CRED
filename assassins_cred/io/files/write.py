@@ -1,8 +1,8 @@
 import csv
 
 from ... import constants
-from ...mail.school import unpack_students
 from ...school import School
+from ...util.school import unpack_students
 
 
 def write_people(school: School, file: str) -> None:

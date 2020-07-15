@@ -1,20 +1,19 @@
-from assassins_cred.shuffle import shuffle_by_grade
 import pprint
 
-from assassins_cred.file_io.init_read import from_csv
-from assassins_cred.file_io.read import read_people
-from assassins_cred.file_io.write import write_people
-from assassins_cred.shuffle import shuffle_by_grade
+from assassins_cred.io.init_read import from_csv
+from assassins_cred.io.read import read_people
+from assassins_cred.io.write import write_people
+from assassins_cred.shuffle import shuffle_school_grade
 
-grades = from_csv("./test_resources/grade 8.csv")
-pprint.pprint(grades)
+school = from_csv("./test_resources/grade 8.csv")
+pprint.pprint(school)
 
-write_people(grades.values(), "./test_resources/people.csv")
+write_people(school, "./test_resources/people.csv")
 
-shuff = shuffle_by_grade(list(grades.values()))
+shuff = shuffle_school_grade(school)
 pprint.pprint(shuff)
 
-write_people(shuff.values(), "./test_resources/people.csv")
+write_people(shuff, "./test_resources/people.csv")
 
-ppl = read_people("./test_resources/people.csv")
-pprint.pprint(ppl)
+school = read_people("./test_resources/people.csv")
+pprint.pprint(school)

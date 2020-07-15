@@ -65,7 +65,7 @@ class Class:
     """
     Simple class respresenting a school class e.g. 10A 12B 8C
     """
-    def __init__(self, grade_name: str, class_name: str, students: t.Optional[t.Sequence[Student]] = None,
+    def __init__(self, grade_name: str, class_name: str, students: t.Optional[t.Dict[str, Student]] = None,
                  grade: t.Optional = None):
         """
 
@@ -85,9 +85,16 @@ class Class:
             student.clazz = self
         self.student_dict[student.full_name] = student
 
+    def remove_student(self, student: Student):
+        for name, _student in self.student_dict.copy().items():
+            if _student == student:
+                self.student_dict.pop(name)
+                return
+        raise ValueError(f"{student} is not in the class")
+
     @property
-    def students(self) -> list:
-        return self.student_dict.values()
+    def students(self) -> t.List[Student]:
+        return list(self.student_dict.values())
 
     @staticmethod
     def _sort_key(student: Student):
@@ -97,8 +104,9 @@ class Class:
             ' '.join(split[:-1])
         )
 
-    def sort_students(self) -> None:
-        self.student_dict = dict(sorted(self.student_dict.items(), key=lambda x: self._sort_key(x[1])))
+    def sort(self, key=None) -> None:
+        key = key or self._sort_key
+        self.student_dict = dict(sorted(self.student_dict.items(), key=lambda x: key(x[1])))
 
 
 class Grade:
@@ -106,23 +114,32 @@ class Grade:
     Simple class respresenting a grade
     """
 
-    def __init__(self, grade: int, classes: t.Optional[t.Sequence[Class]] = None):
+    def __init__(self, grade: int, classes: t.Optional[t.Dict[str, Class]] = None, school: t.Optional = None):
         """
 
         :param grade: The grade number
         :param classes: A sequence of :class:`assassins_cred.class_grade.Class`
         """
-        self.grade = grade
+        self.grade_num = grade
 
-        self.class_dict = {} if classes is None else classes
+        self.class_dict: t.Dict[str, Class] = {} if classes is None else classes
+
+        self.school = school
 
     def add_class(self, clazz: Class):
         if clazz.grade is None:
             clazz.grade = self
         self.class_dict[clazz.name] = clazz
 
+    def remove_class(self, clazz: Class):
+        for name, _clazz in self.class_dict.copy().items():
+            if _clazz == clazz:
+                self.class_dict.pop(name)
+                return
+        raise ValueError(f"{clazz} is not in the class")
+
     @property
-    def classes(self) -> list:
+    def classes(self) -> t.List[Class]:
         return list(self.class_dict.values())
 
     @staticmethod
@@ -132,5 +149,48 @@ class Grade:
             clazz.class_name
         )
 
-    def sort_classes(self) -> None:
-        self.class_dict = dict(sorted(self.class_dict.items(), key=lambda x: self._sort_key(x[1])))
+    def sort(self, key=None) -> None:
+        key = key or self._sort_key
+        self.class_dict = dict(sorted(self.class_dict.items(), key=lambda x: key(x[1])))
+
+    def rsort(self, key=None) -> None:
+        key = key or self._sort_key
+        for clazz in self.classes:
+            clazz.sort()
+        self.sort(key)
+
+
+class School:
+    def __init__(self, name: str, grades: t.Optional[t.Dict[str, Grade]] = None):
+        self.name = name
+
+        self.grade_dict: t.Dict[str, Grade] = {} if grades is None else grades
+
+    def add_grade(self, grade: Grade):
+        if grade.school is None:
+            grade.school = self
+        self.grade_dict[grade.grade_num] = grade
+
+    @property
+    def grades(self) -> t.List[Grade]:
+        return list(self.grade_dict.values())
+
+    @staticmethod
+    def _sort_key(grade: Grade):
+        return grade.grade_num
+
+    def sort(self, key=None) -> None:
+        """
+        Sorts the grades
+        """
+        key = key or self._sort_key
+        self.grade_dict = dict(sorted(self.grade_dict.items(), key=lambda x: key(x[1])))
+
+    def rsort(self, key=None) -> None:
+        """
+        Sorts the grade, classes and students
+        """
+        key = key or self._sort_key
+        for grade in self.grades:
+            grade.rsort()
+        self.sort(key)

@@ -11,3 +11,5 @@ people_fieldnames = [
     "is_dead",
     "has_killed"
 ]
+
+code_length = 3

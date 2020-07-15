@@ -1,21 +1,20 @@
 import csv
-import typing as t
 
 from .. import constants
-from ..school import Grade
+from ..school import School
 from ..util.school import unpack_students
 
 
-def write_people(grades: t.Sequence[Grade], file: str) -> None:
+def write_people(school: School, file: str) -> None:
     """
     Write to a csv file in the format
             name,class,email,code,target,isdead,haskilled
-    :param grades:
+    :param school:
     :param file: The filename to write to
     """
     with open(file, "w", newline='') as f:
         csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        students = unpack_students(grades)
+        students = unpack_students(school.grades)
         csv_writer.writerow(constants.people_fieldnames)
         rows = [
             (

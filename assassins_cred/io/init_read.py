@@ -1,8 +1,7 @@
 import csv
 import re
-import typing as t
 
-from ..school import Student, Class, Grade
+from ..school import Student, Class, Grade, School
 
 TXT_FORMAT = re.compile(r"([a-zA-Z()-]+) ([a-zA-Z() -]+) ((\d{1,3})([A-Z]))")
 TXT_MATCH_LEN = 5
@@ -13,7 +12,7 @@ TXT_GRADE = 3
 TXT_CLASS = 4
 
 
-def from_txt(file: str) -> t.Dict[str, Grade]:
+def from_txt(file: str) -> School:
     """
     Read from a txt file into :class:`assassins_cred.class_grade.Class` in the format
         Name Surname(s) Class
@@ -21,6 +20,7 @@ def from_txt(file: str) -> t.Dict[str, Grade]:
     :return: a Mapping: class_name to Grade
     """
 
+    school = School("westerford")
     grades = {}
     classes = {}
 
@@ -32,7 +32,9 @@ def from_txt(file: str) -> t.Dict[str, Grade]:
         if len(match) == TXT_MATCH_LEN and all(match):
             student = Student(match[TXT_FIRST_NAME], match[TXT_LAST_NAME])
             if match[TXT_GRADE] not in grades.keys():
-                grades[match[TXT_GRADE]] = Grade(int(match[TXT_GRADE]))
+                grade = Grade(int(match[TXT_GRADE]))
+                grades[match[TXT_GRADE]] = grade
+                school.add_grade(grade)
             grade = grades[match[TXT_GRADE]]
 
             if match[TXT_FULL_ClASS] not in classes.keys():
@@ -42,12 +44,9 @@ def from_txt(file: str) -> t.Dict[str, Grade]:
             clazz = classes.get(match[TXT_FULL_ClASS])
             clazz.add_student(student)
 
-    for grade in grades.values():
-        grade.sort_classes()
-        for clazz in grade.classes:
-            clazz.sort_students()
+    school.rsort()
 
-    return grades
+    return school
 
 
 CSV_FIRST_NAME = "First name"
@@ -56,7 +55,7 @@ CSV_GRADE = "Grade"
 CSV_CLASS = "Class"
 
 
-def from_csv(file: str) -> t.Dict[str, Grade]:
+def from_csv(file: str) -> School:
     """
     Read from a csv file with a , delimiter into :class:`assassins_cred.class_grade.Class` in the format
         Name, Surname, Grade, Class
@@ -64,6 +63,7 @@ def from_csv(file: str) -> t.Dict[str, Grade]:
     :return: a Mapping: class_name to Grade
     """
 
+    school = School("westerford")
     grades = {}
     classes = {}
 
@@ -72,7 +72,9 @@ def from_csv(file: str) -> t.Dict[str, Grade]:
         for row in csv_reader:
             student = Student(row[CSV_FIRST_NAME], row[CSV_LAST_NAME])
             if row[CSV_GRADE] not in grades.keys():
-                grades[row[CSV_GRADE]] = Grade(int(row[CSV_GRADE]))
+                grade = Grade(int(row[CSV_GRADE]))
+                grades[row[CSV_GRADE]] = grade
+                school.add_grade(grade)
             grade = grades[row[CSV_GRADE]]
 
             full_class = row[CSV_GRADE] + row[CSV_CLASS]
@@ -83,9 +85,7 @@ def from_csv(file: str) -> t.Dict[str, Grade]:
                 grade.add_class(clazz)
             clazz = classes.get(full_class)
             clazz.add_student(student)
-    for grade in grades.values():
-        grade.sort_classes()
-        for clazz in grade.classes:
-            clazz.sort_students()
 
-    return grades
+    school.rsort()
+
+    return school

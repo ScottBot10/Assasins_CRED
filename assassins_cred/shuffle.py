@@ -1,8 +1,8 @@
 import random
 import typing as t
 
+from .mail.school import students_by_grade, dict_str_grade, unpack_students, dict_str_student
 from .school import Grade, Student, School
-from .util.school import students_by_grade, dict_str_grade, unpack_students, dict_str_student
 
 
 def _shuffle(by_grade):

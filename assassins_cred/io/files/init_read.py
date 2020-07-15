@@ -1,7 +1,7 @@
 import csv
 import re
 
-from ..school import Student, Class, Grade, School
+from ...school import Student, Class, Grade, School
 
 TXT_FORMAT = re.compile(r"([a-zA-Z()-]+) ([a-zA-Z() -]+) ((\d{1,3})([A-Z]))")
 TXT_MATCH_LEN = 5

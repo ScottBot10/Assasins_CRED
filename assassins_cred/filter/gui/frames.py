@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .gui import PeopleGUI
-from assassins_cred.school import Student, Class
+from ...school import Student, Class
 
 
 class ClassFrame(tk.Frame):

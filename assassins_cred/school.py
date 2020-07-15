@@ -1,7 +1,7 @@
 import typing as t
 
 from . import constants
-from .util.school import full_name
+from .mail.school import full_name
 
 
 class Student:
@@ -53,11 +53,15 @@ class Student:
             self._email = self._make_email()
         return self._email
 
-    def _make_email(self) -> str:
+    @property
+    def full_email(self) -> str:
+        return self._make_email(True)
+
+    def _make_email(self, with_domain=False) -> str:
         return (
             f"{self.first_name[0].lower()}"
-            f"{self.surname.lower().replace('-', '').replace(' ', '')}@"
-            f"{constants.email_domain}"
+            f"{self.surname.lower().replace('-', '').replace(' ', '')}"
+            f"{constants.email_domain}" if with_domain else ''
         )
 
 
@@ -169,7 +173,7 @@ class School:
     def add_grade(self, grade: Grade):
         if grade.school is None:
             grade.school = self
-        self.grade_dict[grade.grade_num] = grade
+        self.grade_dict[str(grade.grade_num)] = grade
 
     @property
     def grades(self) -> t.List[Grade]:

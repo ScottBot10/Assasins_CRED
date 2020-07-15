@@ -55,4 +55,16 @@ class PeopleGUI(tk.Frame):
         return self.school
 
     def restart(self):
-        pass
+        for student, var in self.button_dict.items():
+            var.set(0)
+        self.total_selected = 0
+        self.nb_grades.select(0)
+
+        for tab in self.nb_grades.tabs():
+            widget = self.nb_grades.nametowidget(tab)
+            if isinstance(widget, ttk.Notebook):
+                widget.select(0)
+                for tab in widget.tabs():
+                    widget = widget.nametowidget(tab)
+                    if isinstance(widget, ClassFrame):
+                        widget.select_var.set(0)

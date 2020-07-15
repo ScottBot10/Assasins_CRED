@@ -1,7 +1,7 @@
 import csv
 
-from ..school import Grade, Student, Class, School
-from ..util.school import full_name, to_bool
+from ...mail.school import full_name, to_bool
+from ...school import Grade, Student, Class, School
 
 CSV_NAME = "name"
 CSV_SURNAME = "surname"

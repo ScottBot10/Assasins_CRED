@@ -1,3 +1,5 @@
+import re
+
 people_fieldnames = [
     "name",
     "surname",
@@ -11,6 +13,17 @@ people_fieldnames = [
 ]
 
 code_length = 3
+
+_NAME_PATTERN = r"(?P<full_name>(?P<first_name>[a-zA-Z()-]+) (?P<surname>[a-zA-Z() -]+))"
+_CLASS_PATTERN = r"(?P<full_class>(?P<grade>\d{1,3})(?P<class>[A-Z]))"
+
+NAME_FORMAT = re.compile(_NAME_PATTERN)
+CLASS_FORMAT = re.compile(_CLASS_PATTERN)
+
+TXT_FORMAT = re.compile(fr"{_NAME_PATTERN} {_CLASS_PATTERN}")
+
+_EMAIL_PATTERN = r"(?P<from>.+) <(?P<email>(?P<address>[a-zA-Z.]+)@(?P<domain>[a-zA-Z.]+))>"
+EMAIL_FORMAT = re.compile(_EMAIL_PATTERN)
 
 
 class Email:

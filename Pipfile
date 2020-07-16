@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 pyyaml = "*"
 easyimap = "*"
+gspread = "*"
+oauth2client = "*"
 
 [requires]
 python_version = "3.8"

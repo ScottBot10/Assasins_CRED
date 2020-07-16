@@ -41,8 +41,9 @@ def shuffle_school_grade(school: School) -> School:
     return school
 
 
-def shuffle_all(school: School = None, grades: t.Sequence[Grade] = None, students: t.Sequence[Student] = None) -> \
-t.Dict[str, Student]:
+def shuffle_all(school: School = None,
+                grades: t.Sequence[Grade] = None,
+                students: t.Sequence[Student] = None) -> t.Dict[str, Student]:
     if school is not None and grades is None and students is None:
         students = unpack_students(school.grades)
     elif grades is not None and school is None and students is None:

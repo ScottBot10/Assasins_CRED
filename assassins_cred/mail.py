@@ -1,19 +1,16 @@
-# noinspection PyProtectedMember
 import imaplib
-import re
 import smtplib
 import sys
 import typing as t
 from email.message import EmailMessage
 
 from easyimap.easyimap import MailObj
+# noinspection PyProtectedMember
 from easyimap.easyimap import _parse_email as parse_email
 
-from assassins_cred.constants import Email
+from assassins_cred.constants import Email, EMAIL_FORMAT
 from assassins_cred.school import Student
 from assassins_cred.util.config import Config
-
-EMAIL_ADDRESS = re.compile(r"(?P<from>.+) <(?P<email>(?P<address>[a-zA-Z.]+)@(?P<domain>[a-zA-Z.]+))>")
 
 
 def clear_inbox(email, password, mail_box="Inbox") -> None:
@@ -83,17 +80,15 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                           mail: MailObj,
                           students: t.Dict[str, Student],
                           from_address: str,
-                          config: Config) -> None:
+                          config: Config) -> bool:
     if mail.title.lower() == Email.email_subject:
-        match = EMAIL_ADDRESS.match(mail.from_addr)
+        match = EMAIL_FORMAT.match(mail.from_addr)
         if match is not None:
             address = match.groupdict()["address"]
             if address in students:
                 student = students[address]
                 if not student.has_killed:
                     if not student.is_dead:
-                        print(student.target.code)
-                        print(mail.body.lower().strip())
                         if student.target.code in mail.body.lower().strip():
                             send_email(
                                 to_address=student.full_email,
@@ -111,6 +106,7 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                             )
                             student.has_killed = True
                             student.target.is_dead = True
+                            return True
                         else:
                             send_email(
                                 to_address=student.full_email,
@@ -127,10 +123,12 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                             body=Email.email_dead.format(student=student),
                             smtp=smtp
                         )
+    return False
 
 
-def get_mail(smtp: smtplib.SMTP, imap: imaplib.IMAP4, students: t.Dict[str, Student], config: Config):
+def get_mail(smtp: smtplib.SMTP, imap: imaplib.IMAP4, students: t.Dict[str, Student], config: Config) -> bool:
     imap.select()
+    bs = []
     (retcode, messages) = imap.search(None, '(UNSEEN)')
     if retcode == 'OK':
         if messages == [b'']:
@@ -141,12 +139,14 @@ def get_mail(smtp: smtplib.SMTP, imap: imaplib.IMAP4, students: t.Dict[str, Stud
                 typ, data = imap.fetch(num, '(RFC822)')
                 mail = parse_email(data)
                 imap.store(num, '+FLAGS', '\\Seen')
-                process_incoming_mail(
+                b = process_incoming_mail(
                     smtp=smtp,
                     mail=mail,
                     students=students,
                     from_address=config.creds["email"],
                     config=config
                 )
+                bs.append(b)
         except:
             print(sys.exc_info()[1])
+    return any(bs)

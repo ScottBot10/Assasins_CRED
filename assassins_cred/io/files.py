@@ -1,9 +1,12 @@
 import csv
+import logging
 
 from assassins_cred import constants
 from assassins_cred.constants import TXT_FORMAT
 from assassins_cred.school import School, Student, Grade, Class
 from assassins_cred.util.school import to_bool, full_name, unpack_students
+
+logger = logging.getLogger("assassins_cred")
 
 INIT_TXT_FIRST_NAME = "first_name"
 INIT_TXT_LAST_NAME = "surname"
@@ -28,7 +31,7 @@ def from_txt(file: str) -> School:
         contents = f.read()
     for line in contents.splitlines():
         match = TXT_FORMAT.match(line)
-        print(match)
+        logger.debug(match)
         if match is not None:
             student = Student(match[INIT_TXT_FIRST_NAME], match[INIT_TXT_LAST_NAME])
             if match[INIT_TXT_GRADE] not in grades:

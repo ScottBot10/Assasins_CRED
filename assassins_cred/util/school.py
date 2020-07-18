@@ -74,8 +74,8 @@ def dict_str_student(students: t.Sequence[Student]) -> t.Dict[str, Student]:
     return {student.full_name: student for student in students}
 
 
-def students_by_grade(grades: t.Sequence[Grade]) -> t.Dict[Grade, t.List[Student]]:
-    return {grade: unpack_students((grade,)) for grade in grades}
+def students_by_grade(school: School) -> t.Dict[Grade, t.List[Student]]:
+    return {grade: unpack_students((grade,)) for grade in school.grades}
 
 
 def to_bool(val: str) -> bool:

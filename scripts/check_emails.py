@@ -1,6 +1,7 @@
 import imaplib
 import smtplib
 
+from assassins_cred import logger
 from assassins_cred.io.files import read_people, write_people
 from assassins_cred.mail import get_mail
 from assassins_cred.util.config import Config
@@ -17,15 +18,15 @@ try:
         try:
             smtp.login(config.creds["email"], config.creds["password"])
         except smtplib.SMTPAuthenticationError:
-            print('Turn on less secure access or check if you have the correct password')
+            logger.error('Turn on less secure access or check if you have the correct password')
             exit()
         with imaplib.IMAP4_SSL("imap.gmail.com") as imap:
             try:
                 imap.login(config.creds["email"], config.creds["password"])
             except imap.abort:
-                print('Turn on less secure access or check if you have the correct password')
+                logger.error('Turn on less secure access or check if you have the correct password')
                 exit()
-            print("Checking emails")
+            logger.debug("Checking emails")
             while True:
                 has_changed = get_mail(
                     smtp=smtp,
@@ -39,3 +40,5 @@ except:
     pass
 finally:
     write_people(school, "../test_resources/people.csv")
+
+logger.info("Finished checking emails")

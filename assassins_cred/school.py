@@ -1,7 +1,10 @@
+import logging
 import typing as t
 
 from . import constants
 from .util.school import full_name
+
+logger = logging.getLogger("assassins_cred")
 
 
 class Student:
@@ -170,6 +173,8 @@ class School:
         self.name = name
 
         self.grade_dict: t.Dict[str, Grade] = {} if grades is None else grades
+
+        logger.debug(f"New school created: {self.name}")
 
     def add_grade(self, grade: Grade):
         if grade.school is None:

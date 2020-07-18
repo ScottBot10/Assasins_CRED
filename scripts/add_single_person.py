@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 
+from assassins_cred import logger
 from assassins_cred.io import files
 from assassins_cred.school import Student
 
@@ -20,3 +21,4 @@ if match is not None:
     clazz = school.grade_dict[groups[files.INIT_TXT_GRADE]].class_dict[groups[files.INIT_TXT_FULL_ClASS]]
     clazz.add_student(Student(groups[files.INIT_TXT_FIRST_NAME], groups[files.INIT_TXT_LAST_NAME]))
     files.write_people(school, "../test_resources/people.csv")
+    logger.info(f"Added {name}")

@@ -1,4 +1,5 @@
 import imaplib
+import logging
 import smtplib
 import sys
 import typing as t
@@ -11,6 +12,8 @@ from easyimap.easyimap import _parse_email as parse_email
 from assassins_cred.constants import Email, EMAIL_FORMAT
 from assassins_cred.school import Student
 from assassins_cred.util.config import Config
+
+logger = logging.getLogger("assassins_cred")
 
 
 def clear_inbox(email, password, mail_box="Inbox") -> None:
@@ -25,6 +28,7 @@ def clear_inbox(email, password, mail_box="Inbox") -> None:
         m.select('"[Gmail]/Trash"')
         m.store("1:*", '+FLAGS', '\\Deleted')
         m.expunge()
+        logger.info(f"Deleted all emails from {mail_box}")
 
 
 def send_email(
@@ -41,7 +45,7 @@ def send_email(
             try:
                 smtp.login(from_address, password)
             except smtplib.SMTPAuthenticationError:
-                print('Turn on less secure access or check if you have the correct password')
+                logger.error('Turn on less secure access or check if you have the correct password')
                 return
             send_email(to_address, from_address, title, body, smtp)
     else:
@@ -53,6 +57,7 @@ def send_email(
         msg.set_content(body)
 
         smtp.send_message(msg)
+        logger.debug(f'Email "{msg["Subject"]}" sent from "{msg["From"]}" to "{msg["To"]}"')
 
 
 def send_to_each(students: t.Sequence[Student],
@@ -106,6 +111,7 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                             )
                             student.has_killed = True
                             student.target.is_dead = True
+                            logger.info(f"{student} has killed {student.target}")
                             return True
                         else:
                             send_email(
@@ -115,6 +121,7 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                                 body=Email.email_failure.format(student=student),
                                 smtp=smtp
                             )
+                            logger.info(f"{student} tried to kill {student.target} but sent the wrong code")
                     else:
                         send_email(
                             to_address=student.full_email,
@@ -123,6 +130,7 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                             body=Email.email_dead.format(student=student),
                             smtp=smtp
                         )
+                        logger.info(f"{student} tried to kill {student.target} but is already dead")
     return False
 
 
@@ -134,6 +142,7 @@ def get_mail(smtp: smtplib.SMTP, imap: imaplib.IMAP4, students: t.Dict[str, Stud
         if messages == [b'']:
             imap.expunge()
             return
+        logger.debug(f"New messages found")
         try:
             for num in messages[0].split(b' '):
                 typ, data = imap.fetch(num, '(RFC822)')
@@ -148,5 +157,5 @@ def get_mail(smtp: smtplib.SMTP, imap: imaplib.IMAP4, students: t.Dict[str, Stud
                 )
                 bs.append(b)
         except:
-            print(sys.exc_info()[1])
+            logger.error(sys.exc_info()[1])
     return any(bs)

@@ -1,12 +1,13 @@
 import smtplib
 import typing as t
 
+from assassins_cred import logger
 from assassins_cred.io.files import read_people
 from assassins_cred.mail import send_to_each
 from assassins_cred.school import Student
-from assassins_cred.shuffle import shuffle_all
 from assassins_cred.util.config import Config
 from assassins_cred.util.school import assign_codes, unpack_students
+from assassins_cred.util.shuffle import shuffle_all
 
 email_winners = """Congratulations, {student.first_name}, you have made it to the next round!
 But the game is not over yet, you have received a new target!
@@ -48,7 +49,7 @@ with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
     try:
         smtp.login(config.creds["email"], config.creds["password"])
     except smtplib.SMTPAuthenticationError:
-        print('Turn on less secure access or check if you have the correct password')
+        logger.error('Turn on less secure access or check if you have the correct password')
         exit()
     send_to_each(
         students=unpack_students(school.grades),

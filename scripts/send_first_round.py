@@ -1,5 +1,6 @@
 import smtplib
 
+from assassins_cred import logger
 from assassins_cred.constants import Email
 from assassins_cred.io.files import read_people
 from assassins_cred.mail import send_to_each
@@ -23,7 +24,7 @@ with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
     try:
         smtp.login(config.creds["email"], config.creds["password"])
     except smtplib.SMTPAuthenticationError:
-        print('Turn on less secure access or check if you have the correct password')
+        logger.error('Turn on less secure access or check if you have the correct password')
         exit()
     send_to_each(
         students=students,

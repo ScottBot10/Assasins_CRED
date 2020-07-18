@@ -1,7 +1,9 @@
 import tkinter as tk
 
+from assassins_cred import logger
 from assassins_cred.filter.gui.gui import PeopleGUI
 from assassins_cred.io.files import from_csv, write_people
+from assassins_cred.util.school import unpack_students
 
 # forms = Forms('1UwOiJyvJr-REvUnRVir2_6E97BGk321-tb06BhGJEQ8')
 
@@ -25,3 +27,5 @@ school = gui.school
 # school = assign_codes(school)
 # school = shuffle_school_grade(school)
 write_people(school, "../test_resources/people.csv")
+
+logger.info(f"Added {len(unpack_students(school.grades))} people")

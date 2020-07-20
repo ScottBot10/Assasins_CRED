@@ -10,6 +10,9 @@ pyyaml = "*"
 easyimap = "*"
 gspread = "*"
 oauth2client = "*"
+pandas = "*"
+matplotlib = "*"
+seaborn = "*"
 
 [requires]
 python_version = "3.8"

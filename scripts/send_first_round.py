@@ -5,10 +5,9 @@ from assassins_cred.constants import Email
 from assassins_cred.io.files import read_people
 from assassins_cred.mail import send_to_each
 from assassins_cred.util.config import Config
-from assassins_cred.util.school import unpack_students
 
 school = read_people("../test_resources/people.csv")
-students = unpack_students(school.grades)
+students = school.students
 
 config = Config("../config.yaml")
 

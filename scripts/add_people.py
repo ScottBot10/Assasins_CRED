@@ -3,9 +3,6 @@ import tkinter as tk
 from assassins_cred import logger
 from assassins_cred.filter.gui.gui import PeopleGUI
 from assassins_cred.io.files import from_csv, write_people
-from assassins_cred.util.school import unpack_students
-
-# forms = Forms('1UwOiJyvJr-REvUnRVir2_6E97BGk321-tb06BhGJEQ8')
 
 
 ppl = from_csv("../test_resources/grade 8.csv")
@@ -28,4 +25,4 @@ school = gui.school
 # school = shuffle_school_grade(school)
 write_people(school, "../test_resources/people.csv")
 
-logger.info(f"Added {len(unpack_students(school.grades))} people")
+logger.info(f"Added {len(school.students)} people")

@@ -13,7 +13,7 @@ FORM_PARTICIPATE = "Do you want to participate?"
 
 
 def read_form(secrets_file: str, sheet_id: str) -> School:
-    school = School("westerford")
+    school = School(school_name)
     grades = {}
     classes = {}
 

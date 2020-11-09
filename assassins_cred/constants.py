@@ -12,6 +12,8 @@ people_fieldnames = [
     "has_killed"
 ]
 
+school_name = "westerford"
+
 code_length = 3
 
 _NAME_PATTERN = r"(?P<full_name>(?P<first_name>[a-zA-Z()-]+) (?P<surname>[a-zA-Z() -]+))"

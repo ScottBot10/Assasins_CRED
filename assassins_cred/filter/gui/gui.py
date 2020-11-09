@@ -1,8 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import typing as t
-
-from assassins_cred.school import Student, School
+from ...school import Student, School
 from .frames import ClassFrame
 
 

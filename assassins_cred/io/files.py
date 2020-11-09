@@ -1,10 +1,10 @@
 import csv
 import logging
 
-from assassins_cred import constants
-from assassins_cred.constants import TXT_FORMAT
-from assassins_cred.school import School, Student, Grade, Class
-from assassins_cred.util.school import to_bool, full_name, unpack_students
+from .. import constants
+from ..constants import TXT_FORMAT, school_name
+from ..school import School, Student, Grade, Class
+from ..util.school import to_bool, full_name
 
 logger = logging.getLogger("assassins_cred")
 
@@ -23,7 +23,7 @@ def from_txt(file: str) -> School:
     :return: a Mapping: class_name to Grade
     """
 
-    school = School("westerford")
+    school = School(school_name)
     grades = {}
     classes = {}
 
@@ -66,7 +66,7 @@ def from_csv(file: str) -> School:
     :return: a Mapping: class_name to Grade
     """
 
-    school = School("westerford")
+    school = School(school_name)
     grades = {}
     classes = {}
 
@@ -113,7 +113,7 @@ def read_people(file: str) -> School:
     :return: a Mapping: class_name to Grade
     """
 
-    school = School("westerford")
+    school = School(school_name)
     grades = {}
     classes = {}
     students = {}
@@ -166,7 +166,7 @@ def write_people(school: School, file: str) -> None:
     """
     with open(file, "w", newline='') as f:
         csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        students = unpack_students(school.grades)
+        students = school.students
         csv_writer.writerow(constants.people_fieldnames)
         rows = [
             (

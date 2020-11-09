@@ -25,27 +25,14 @@ def _unpack_students_key(student: Student):
 def assign_codes(school: School) -> School:
     combos_left = list(
         map(lambda x: ''.join(x), combinations(string.ascii_lowercase + string.digits + "_", code_length)))
-    students = unpack_students(school.grades)
+    students = school.students
     if len(combos_left) < len(students):
-        raise ValueError("There are not enough code combinations! Try increasing the length")
+        raise ValueError("There are not enough code combinations! Try increasing the code length")
     for student in students:
         code = random.choice(combos_left)
         combos_left.remove(code)
         student.code = code
     return school
-
-
-def unpack_students(grades: t.Sequence[Grade], sort=True) -> t.List[Student]:
-    students = []
-
-    for grade in grades:
-        for clazz in grade.classes:
-            students.extend(clazz.students)
-
-    if sort:
-        students.sort(key=_unpack_students_key)
-
-    return students
 
 
 def full_name(first_name: str, surname: str, middle_names=None):
@@ -75,8 +62,8 @@ def dict_str_student(students: t.Sequence[Student]) -> t.Dict[str, Student]:
 
 
 def students_by_grade(school: School) -> t.Dict[Grade, t.List[Student]]:
-    return {grade: unpack_students((grade,)) for grade in school.grades}
+    return {grade: grade.students for grade in school.grades}
 
 
 def to_bool(val: str) -> bool:
-    return val.lower() == "true"
+    return str(val).lower() in ("yes", "true", "t", "1")

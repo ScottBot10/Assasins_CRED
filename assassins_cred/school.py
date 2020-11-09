@@ -161,6 +161,15 @@ class Grade:
         key = key or self._sort_key
         self.class_dict = dict(sorted(self.class_dict.items(), key=lambda x: key(x[1])))
 
+    @property
+    def students(self) -> t.List[Student]:
+        students = []
+
+        for clazz in self.classes:
+            students.extend(clazz.students)
+
+        return students
+
     def rsort(self, key=None) -> None:
         key = key or self._sort_key
         for clazz in self.classes:
@@ -195,6 +204,15 @@ class School:
         """
         key = key or self._sort_key
         self.grade_dict = dict(sorted(self.grade_dict.items(), key=lambda x: key(x[1])))
+
+    @property
+    def students(self) -> t.List[Student]:
+        students = []
+
+        for grade in self.grades:
+            students.extend(grade.students)
+
+        return students
 
     def rsort(self, key=None) -> None:
         """

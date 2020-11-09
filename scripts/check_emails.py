@@ -1,14 +1,21 @@
 import imaplib
 import smtplib
+from datetime import datetime
 
 from assassins_cred import logger
 from assassins_cred.io.files import read_people, write_people
 from assassins_cred.mail import get_mail
 from assassins_cred.util.config import Config
-from assassins_cred.util.school import unpack_students, email_student_dict
+from assassins_cred.util.school import email_student_dict
+from assassins_cred.util.stats_logging import StatsLogger
 
-school = read_people("../test_resources/people.csv")
-students = unpack_students(school.grades)
+STAT_FILE = "../test_resources/stats_log.json"
+PEOPLE_FILE = "../test_resources/people.csv"
+
+stats = StatsLogger(STAT_FILE)
+
+school = read_people(PEOPLE_FILE)
+students = school.students
 students = email_student_dict(students)
 
 config = Config("../config.yaml")
@@ -28,17 +35,18 @@ try:
                 exit()
             logger.debug("Checking emails")
             while True:
-                has_changed = get_mail(
-                    smtp=smtp,
-                    imap=imap,
-                    students=students,
-                    config=config
-                )
-                if has_changed:
-                    write_people(school, "../test_resources/people.csv")
+                if get_mail(
+                        smtp=smtp,
+                        imap=imap,
+                        students=students,
+                        config=config
+                ):
+                    write_people(school, PEOPLE_FILE)
+                    stats.add_stat(school, datetime.now())
 except:
     pass
 finally:
-    write_people(school, "../test_resources/people.csv")
+    write_people(school, PEOPLE_FILE)
+    stats.write()
 
 logger.info("Finished checking emails")

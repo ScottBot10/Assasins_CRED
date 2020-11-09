@@ -8,9 +8,10 @@ from assassins_cred.mail import get_mail
 from assassins_cred.util.config import Config
 from assassins_cred.util.school import email_student_dict
 from assassins_cred.util.stats_logging import StatsLogger
+from assassins_cred.constants import resource_file
 
-STAT_FILE = "../test_resources/stats_log.json"
-PEOPLE_FILE = "../test_resources/people.csv"
+STAT_FILE = f"../{resource_file}/stats_log.json"
+PEOPLE_FILE = f"../{resource_file}/people.csv"
 
 stats = StatsLogger(STAT_FILE)
 

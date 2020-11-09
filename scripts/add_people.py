@@ -3,10 +3,10 @@ import tkinter as tk
 from assassins_cred import logger
 from assassins_cred.filter.gui.gui import PeopleGUI
 from assassins_cred.io.files import from_csv, write_people
+from assassins_cred.constants import resource_file
 
-
-ppl = from_csv("../test_resources/grade 8.csv")
-# ppl = from_txt("../test_resources/people_cp1.txt")
+ppl = from_csv(f"../{resource_file}/grade 8.csv")
+# ppl = from_txt(f"../{resource_file}/people_cp1.txt")
 
 root = tk.Tk()
 
@@ -23,6 +23,6 @@ root.mainloop()
 school = gui.school
 # school = assign_codes(school)
 # school = shuffle_school_grade(school)
-write_people(school, "../test_resources/people.csv")
+write_people(school, f"../{resource_file}/people.csv")
 
 logger.info(f"Added {len(school.students)} people")

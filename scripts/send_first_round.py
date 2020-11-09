@@ -1,12 +1,12 @@
 import smtplib
 
 from assassins_cred import logger
-from assassins_cred.constants import Email
+from assassins_cred.constants import Email, resource_file
 from assassins_cred.io.files import read_people
 from assassins_cred.mail import send_to_each
 from assassins_cred.util.config import Config
 
-school = read_people("../test_resources/people.csv")
+school = read_people(f"../{resource_file}/people.csv")
 students = school.students
 
 config = Config("../config.yaml")

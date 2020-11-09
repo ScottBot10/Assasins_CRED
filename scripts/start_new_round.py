@@ -8,6 +8,7 @@ from assassins_cred.school import Student
 from assassins_cred.util.config import Config
 from assassins_cred.util.school import assign_codes
 from assassins_cred.util.shuffle import shuffle_all
+from assassins_cred.constants import resource_file
 
 email_winners = """Congratulations, {student.first_name}, you have made it to the next round!
 But the game is not over yet, you have received a new target!
@@ -23,7 +24,7 @@ winners: t.Dict[str, Student] = {}
 dead: t.Dict[str, Student] = {}
 not_killed: t.Dict[str, Student] = {}
 
-school = read_people("../test_resources/people.csv")
+school = read_people(f"../{resource_file}/people.csv")
 
 students = school.students
 

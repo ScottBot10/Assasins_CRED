@@ -86,7 +86,7 @@ class Class:
 
         self.student_dict = {} if students is None else students
 
-        self.grade = grade
+        self.grade: Grade = grade
 
     def add_student(self, student: Student):
         if student.clazz is None:

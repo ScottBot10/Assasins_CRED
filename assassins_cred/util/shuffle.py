@@ -44,7 +44,8 @@ def shuffle_all(school: School = None,
         students = School(name=school_name).students
     elif grades is None and students is None:
         raise Exception
-    random.shuffle(values)
+    students = students.copy()
+    random.shuffle(students)
     shuffled = dict(zip(students, students[1:] + [students[0]]))
 
     for student in students:

@@ -1,0 +1,48 @@
+is_test: false
+
+creds:
+  email: ''
+  password: ''
+  test_to: ''
+
+io_init: 'csv_file'
+io_type: 'db'
+stats_file: !PATH [ *PROJECT_ROOT,'' ]
+
+io:
+  db:
+    file: !PATH [ *PROJECT_ROOT,'' ]
+  csv_file:
+    file: !PATH [ *PROJECT_ROOT,'' ]
+  txt_file:
+    file: !PATH [ *PROJECT_ROOT,'' ]
+  forms:
+    creds_file: !PATH [ *PROJECT_ROOT,'' ]
+    token_file: !PATH [ *PROJECT_ROOT,'' ]
+    sheet_id: ''
+
+email:
+  subject: 'elimination'
+  domain: 'gmail.com'
+  titles:
+    success: 'Successful Assassination'
+    failure: &EMAIL_FALIURE 'Unsuccessful Assassination'
+    assassinated: You have been Assassinated
+    dead: *EMAIL_FALIURE
+  contents:
+    success: |-
+      Success Message
+      Can be Multi-lined
+      Student name = {student.name}
+    failure: |-
+      Failure Message
+      Can be Multi-lined
+      Student code = {student.code}
+    dead: |-
+      Death Message
+      Can be Multi-lined
+      Student target code = {student.target.code}
+    assassinated: |-
+      Assassinated Message
+      Can be Multi-lined
+      Student email = {student.full_email}

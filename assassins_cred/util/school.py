@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import random
-import string
+import time
 import typing as t
 from itertools import combinations
 from typing import TYPE_CHECKING
 
-from ..constants import code_length
+from ..constants import code_length, code_chars
+from ..util.google import create_token, build
 
 if TYPE_CHECKING:
     from ..school import School, Grade, Class, Student
@@ -24,10 +25,10 @@ def _unpack_students_key(student: Student):
 
 def assign_codes(school: School) -> School:
     combos_left = list(
-        map(lambda x: ''.join(x), combinations(string.ascii_lowercase + string.digits + "_", code_length)))
-    students = unpack_students(school.grades)
+        map(lambda x: ''.join(x), combinations(code_chars, code_length)))
+    students = school.students
     if len(combos_left) < len(students):
-        raise ValueError("There are not enough code combinations! Try increasing the length")
+        raise ValueError("There are not enough code combinations! Try increasing the code length")
     for student in students:
         code = random.choice(combos_left)
         combos_left.remove(code)
@@ -35,17 +36,15 @@ def assign_codes(school: School) -> School:
     return school
 
 
-def unpack_students(grades: t.Sequence[Grade], sort=True) -> t.List[Student]:
-    students = []
-
-    for grade in grades:
-        for clazz in grade.classes:
-            students.extend(clazz.students)
-
-    if sort:
-        students.sort(key=_unpack_students_key)
-
-    return students
+def assign_code(school: School, student: Student) -> Student:
+    combos = [student.code for student in school.students]
+    combos_left = [
+        combo for combo in
+        map(lambda x: ''.join(x), combinations(code_chars.digits, code_length))
+        if combo not in combos
+    ]
+    student.code = random.choice(combos_left)
+    return student
 
 
 def full_name(first_name: str, surname: str, middle_names=None):
@@ -56,6 +55,38 @@ def full_name(first_name: str, surname: str, middle_names=None):
         _full_name += f"{' '.join(middle_names)} "
     _full_name += str(surname)
     return _full_name
+
+
+def get_proper_emails(school: School, creds_file: str, token_file: str) -> t.Dict[Student, str]:
+    changed_emails: t.Dict[Student, str] = {}
+
+    creds = create_token(creds_file, token_file)
+    people = build('people', 'v1', credentials=creds).people()
+    for student in school.students:
+        while True:
+            try:
+                person = people.searchDirectoryPeople(
+                    readMask='names,emailAddresses,metadata',
+                    sources=['DIRECTORY_SOURCE_TYPE_DOMAIN_PROFILE'],
+                    query=student.full_name
+                ).execute()
+            except:
+                print("Rate limit hit, waiting...")
+                time.sleep(30)
+            else:
+                break
+        # print(person)
+        emails = [
+            email['value'] for email in person['people'][0]['emailAddresses']
+            if email['metadata'].get('primary')
+        ]
+        if emails:
+            email = emails[0]
+            if student.full_email.lower() != email.lower():
+                changed_emails[student] = email.lower()
+        else:
+            print("Didn't work", student.full_name)
+    return changed_emails
 
 
 def email_student_dict(students: t.Sequence[Student]) -> t.Dict[str, Student]:
@@ -75,8 +106,8 @@ def dict_str_student(students: t.Sequence[Student]) -> t.Dict[str, Student]:
 
 
 def students_by_grade(school: School) -> t.Dict[Grade, t.List[Student]]:
-    return {grade: unpack_students((grade,)) for grade in school.grades}
+    return {grade: grade.students for grade in school.grades}
 
 
 def to_bool(val: str) -> bool:
-    return val.lower() == "true"
+    return str(val).lower() in ("yes", "true", "t", "1")

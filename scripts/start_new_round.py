@@ -1,12 +1,12 @@
 import smtplib
 import typing as t
 
+from assassins_cred import config
 from assassins_cred import logger
-from assassins_cred.io.files import read_people
+from assassins_cred.io import IO
 from assassins_cred.mail import send_to_each
 from assassins_cred.school import Student
-from assassins_cred.util.config import Config
-from assassins_cred.util.school import assign_codes, unpack_students
+from assassins_cred.util.school import assign_codes
 from assassins_cred.util.shuffle import shuffle_all
 
 email_winners = """Congratulations, {student.first_name}, you have made it to the next round!
@@ -23,11 +23,11 @@ winners: t.Dict[str, Student] = {}
 dead: t.Dict[str, Student] = {}
 not_killed: t.Dict[str, Student] = {}
 
-school = read_people("../test_resources/people.csv")
+io = IO()
 
-students = unpack_students(school.grades)
+school = io.read_people()
 
-config = Config("../config.yaml")
+students = school.students
 
 for student in students:
     if not student.is_dead and student.has_killed:
@@ -42,28 +42,33 @@ for name, dead_person in dead.items():
 for name, no_kill in not_killed.items():
     no_kill.clazz.remove_student(no_kill)
 
+if len(winners) == 1:
+    logger.info(f"The winner is: {list(winners.values())[0]}")
+    exit()
+
 shuffle_all(school)
 assign_codes(school)
 
 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
     try:
-        smtp.login(config.creds["email"], config.creds["password"])
+        smtp.login(config.creds.email, config.creds.password)
     except smtplib.SMTPAuthenticationError:
         logger.error('Turn on less secure access or check if you have the correct password')
         exit()
+    to = None if not config.is_test else config.creds.test_to
     send_to_each(
-        students=unpack_students(school.grades),
+        students=school.students,
         title="Assassin's CRED",
         body=email_winners,
-        from_address=config.creds["email"],
+        from_address=config.creds.email,
         smtp=smtp,
-        to_address=None if not config.is_test else config.creds["test_to"]
+        to_address=to
     )
     send_to_each(
         students=not_killed.values(),
         title="Eliminated",
         body=email_not_killed,
-        from_address=config.creds["email"],
+        from_address=config.creds.email,
         smtp=smtp,
-        to_address=None if not config.is_test else config.creds["test_to"]
+        to_address=to
     )

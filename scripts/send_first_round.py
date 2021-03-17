@@ -1,16 +1,14 @@
 import smtplib
 
+from assassins_cred import config
 from assassins_cred import logger
-from assassins_cred.constants import Email
-from assassins_cred.io.files import read_people
+from assassins_cred.io import IO
 from assassins_cred.mail import send_to_each
-from assassins_cred.util.config import Config
-from assassins_cred.util.school import unpack_students
 
-school = read_people("../test_resources/people.csv")
-students = unpack_students(school.grades)
+io = IO()
 
-config = Config("../config.yaml")
+school = io.read_people()
+students = school.students
 
 body = """To {student.first_name}
 
@@ -22,7 +20,7 @@ Death Code: {student.code}"""
 
 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
     try:
-        smtp.login(config.creds["email"], config.creds["password"])
+        smtp.login(config.creds.email, config.creds.password)
     except smtplib.SMTPAuthenticationError:
         logger.error('Turn on less secure access or check if you have the correct password')
         exit()
@@ -30,8 +28,8 @@ with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         students=students,
         title="Assassin's CRED",
         body=body,
-        from_address=config.creds["email"],
+        from_address=config.credsemail,
         smtp=smtp,
-        to_address=None if not config.is_test else config.creds["test_to"],
-        format_kws={'subject': Email.email_subject, 'cred_email': config.creds["email"]}
+        to_address=None if not config.is_test else config.creds.test_to,
+        format_kws={'subject': config.email.subject, 'cred_email': config.creds.email}
     )

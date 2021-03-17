@@ -1,8 +1,10 @@
+from os.path import join
+
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 
 from .. import constants
 from ..school import School, Grade, Class, Student
+from ..util.google import create_token
 
 SCOPE = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
@@ -12,12 +14,19 @@ FORM_FULL_CLASS = "Grade and Class (e.g 12B, 8C)"
 FORM_PARTICIPATE = "Do you want to participate?"
 
 
-def read_form(secrets_file: str, sheet_id: str) -> School:
-    school = School("westerford")
+def setup(init, **kw):
+    if 'file' in kw:
+        kw['file'] = join(constants.PROJECT_ROOT, kw['file'])
+    return kw
+
+
+def init_read(creds_file: str, token_file: str, sheet_id: str) -> School:
+    school = School(constants.school_name)
     grades = {}
     classes = {}
 
-    creds = ServiceAccountCredentials.from_json_keyfile_name(secrets_file, SCOPE)
+    creds = create_token(join(constants.PROJECT_ROOT, creds_file),
+                         join(constants.PROJECT_ROOT, token_file), scopes=SCOPE)
     gc = gspread.authorize(creds)
 
     sheet = gc.open_by_key(sheet_id).sheet1

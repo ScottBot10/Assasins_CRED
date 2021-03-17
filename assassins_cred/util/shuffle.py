@@ -1,8 +1,9 @@
 import random
 import typing as t
 
-from assassins_cred.school import Grade, Student, School
-from assassins_cred.util.school import students_by_grade, unpack_students, dict_str_student
+from ..constants import school_name
+from ..school import Grade, Student, School
+from ..util.school import students_by_grade, dict_str_student
 
 
 def shuffle_school_grade(school: School) -> School:
@@ -37,14 +38,15 @@ def shuffle_school_class(school: School) -> School:
 def shuffle_all(school: School = None,
                 grades: t.Sequence[Grade] = None,
                 students: t.Sequence[Student] = None) -> t.Dict[str, Student]:
-    if school is not None and grades is None and students is None:
-        students = unpack_students(school.grades)
-    elif grades is not None and school is None and students is None:
-        students = unpack_students(grades)
-    elif grades is None and students is None:
+    if school is not None:
+        students = school.students
+    elif grades is not None:
+        students = School(name=school_name).students
+    elif school is None and grades is None and students is None:
         raise Exception
-    random.shuffle(values)
-    shuffled = dict(zip(students, students[1:] + [students[0]]))
+    students_cp = students.copy()
+    random.shuffle(students_cp)
+    shuffled = dict(zip(students_cp, students_cp[1:] + [students_cp[0]]))
 
     for student in students:
         if student in shuffled:

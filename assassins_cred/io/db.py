@@ -6,10 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
 
 from assassins_cred import school, logger
-from assassins_cred.constants import CLASS_FORMAT, school_name, PROJECT_ROOT
+from assassins_cred.constants import CLASS_FORMAT, school_name
 from assassins_cred.util.school import full_name
-from assassins_cred.util.shuffle import shuffle_all
-from os.path import join
 
 Base = declarative_base()
 
@@ -85,8 +83,8 @@ class Grade(school.Grade, Base):
     def check(self, session):
         return (
             session.query(Grade)
-            .filter(Grade == self)
-            .one_or_none()
+                .filter(Grade == self)
+                .one_or_none()
         )
 
     def update(self, other: 'Grade'):
@@ -99,7 +97,6 @@ class Grade(school.Grade, Base):
 
 
 class Class(school.Class, Base):
-
     __tablename__ = "classes"
     name = Column(String, primary_key=True)
     students = relationship("Student", backref="clazz")
@@ -174,8 +171,8 @@ class Class(school.Class, Base):
     def check(self, session):
         return (
             session.query(Class)
-            .filter(Class == self)
-            .one_or_none()
+                .filter(Class == self)
+                .one_or_none()
         )
 
 
@@ -232,10 +229,10 @@ class Student(school.Student, Base):
     def check(self, session):
         return (
             session.query(Student).join(Class).join(Grade)
-            .filter(Student == self)
-            .filter(Student.clazz == self.clazz)
-            .filter(Grade == self.clazz.grade)
-            .one_or_none()
+                .filter(Student == self)
+                .filter(Student.clazz == self.clazz)
+                .filter(Grade == self.clazz.grade)
+                .one_or_none()
         )
 
     def update(self, other: 'Student'):

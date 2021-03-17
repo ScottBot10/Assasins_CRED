@@ -7,7 +7,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow as _InstalledAppFlow
 
 from assassins_cred import config as _config
 
-
 _SCOPES = ['https://www.googleapis.com/auth/contacts.readonly',
            'https://www.googleapis.com/auth/directory.readonly',
            'https://www.googleapis.com/auth/spreadsheets.readonly']

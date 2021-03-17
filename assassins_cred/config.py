@@ -1,21 +1,21 @@
-import yaml
-from assassins_cred.constants import config_file, PROJECT_ROOT
-from dotenv import load_dotenv, find_dotenv
 import os
-from pprint import pprint
+
+import yaml
+from dotenv import load_dotenv, find_dotenv
+
+from assassins_cred.constants import config_file, PROJECT_ROOT
 
 os.chdir(PROJECT_ROOT)
 
-
 _node_types = {
-        str: (yaml.ScalarNode, 'tag:yaml.org,2002:str'),
-        bool: (yaml.ScalarNode, 'tag:yaml.org,2002:bool'),
-        int: (yaml.ScalarNode, 'tag:yaml.org,2002:int'),
-        float: (yaml.ScalarNode, 'tag:yaml.org,2002:float'),
-        list: (yaml.SequenceNode, 'tag:yaml.org,2002:seq'),
-        dict: (yaml.MappingNode, 'tag:yaml.org,2002:map'),
-        type(None): (yaml.ScalarNode, 'tag:yaml.org,2002:null')
-    }
+    str: (yaml.ScalarNode, 'tag:yaml.org,2002:str'),
+    bool: (yaml.ScalarNode, 'tag:yaml.org,2002:bool'),
+    int: (yaml.ScalarNode, 'tag:yaml.org,2002:int'),
+    float: (yaml.ScalarNode, 'tag:yaml.org,2002:float'),
+    list: (yaml.SequenceNode, 'tag:yaml.org,2002:seq'),
+    dict: (yaml.MappingNode, 'tag:yaml.org,2002:map'),
+    type(None): (yaml.ScalarNode, 'tag:yaml.org,2002:null')
+}
 
 
 def _env_var_constructor(loader, node):
@@ -38,7 +38,7 @@ def _env_var_constructor(loader, node):
 
 def _path(*path):
     if path:
-        path = os.path.join(*path) if len(path)-1 else path[0]
+        path = os.path.join(*path) if len(path) - 1 else path[0]
         return os.path.normpath(os.path.abspath(path))
     return ''
 
@@ -51,7 +51,6 @@ def _path_constructor(loader, node):
 
 
 def _project_root_constructor(loader, node):
-
     if node.id == 'scalar':
         value = loader.construct_scalar(node)
         keys = [str(value)]
@@ -62,7 +61,6 @@ def _project_root_constructor(loader, node):
 
 
 def make_loader(anchors: dict = None):
-
     anchors = {
         name: _node_types[type(val)][0](_node_types[type(val)][1], val)
         for name, val in anchors.items()
@@ -81,11 +79,9 @@ anchors = {
     'PROJECT_ROOT': PROJECT_ROOT
 }
 
-
 load_dotenv(find_dotenv())
 yaml.SafeLoader.add_constructor("!ENV", _env_var_constructor)
 yaml.SafeLoader.add_constructor("!PATH", _path_constructor)
-
 
 with open(config_file, encoding="UTF-8") as f:
     _CONFIG_YAML = yaml.load(f, Loader=make_loader(anchors))
@@ -119,6 +115,7 @@ def _get_class(name, qualname):
         __name__ = name
         __qualname__ = qualname
         __annotations__ = {}
+
     return ConfigNode
 
 
@@ -143,6 +140,3 @@ for _name, _node in _CONFIG_YAML.items():
         _config_node = _get_class(_name, _name)
         _add_config(_node, clazz=_config_node, section_=_name)
     exec(f'{_name} = _config_node\n')
-
-if __name__ == '__main__':
-    print(io.txt_file.file)

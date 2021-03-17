@@ -1,7 +1,6 @@
-from assassins_cred.util.stats_logging import StatsLogger
-from assassins_cred.constants import resource_file
 from assassins_cred import config
-
+from assassins_cred.constants import resource_file
+from assassins_cred.util.stats_logging import StatsLogger
 
 stats = StatsLogger(config.stats_file)
 

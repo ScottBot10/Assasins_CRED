@@ -9,9 +9,9 @@ from easyimap.easyimap import MailObj
 # noinspection PyProtectedMember
 from easyimap.easyimap import _parse_email as parse_email
 
+import config
 from .constants import EMAIL_FROM_FORMAT
 from .school import Student
-import config
 
 logger = logging.getLogger("assassins_cred")
 

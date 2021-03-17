@@ -1,7 +1,7 @@
 import logging
 import typing as t
 
-from . import constants, config
+from . import config
 from .util.school import full_name
 
 logger = logging.getLogger("assassins_cred")
@@ -109,6 +109,7 @@ class Class:
     """
     Simple class respresenting a school class e.g. 10A 12B 8C
     """
+
     def __init__(self, grade_name: str, class_name: str, students: t.Optional[t.Dict[str, Student]] = None,
                  grade: t.Optional = None):
         """

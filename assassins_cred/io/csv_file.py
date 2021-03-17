@@ -1,9 +1,8 @@
 import csv
 import logging
-from os.path import join
 
 from .. import constants
-from ..constants import school_name, PROJECT_ROOT
+from ..constants import school_name
 from ..school import School, Student, Grade, Class
 from ..util.school import to_bool, full_name
 

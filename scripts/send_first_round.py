@@ -1,10 +1,9 @@
 import smtplib
 
+from assassins_cred import config
 from assassins_cred import logger
-from assassins_cred.constants import resource_file
 from assassins_cred.io import IO
 from assassins_cred.mail import send_to_each
-from assassins_cred import config
 
 io = IO()
 

@@ -1,13 +1,12 @@
 import tkinter as tk
-from tkinter import simpledialog, messagebox
+from tkinter import messagebox
 
 from assassins_cred import logger
-from assassins_cred.io import txt_file
+from assassins_cred.constants import TXT_FORMAT
 from assassins_cred.io import IO
-from assassins_cred.filter.gui import set_middle
+from assassins_cred.io import txt_file
 from assassins_cred.school import Student
 from assassins_cred.util.school import assign_code
-from assassins_cred.constants import resource_file, TXT_FORMAT
 
 root = tk.Tk()
 root.withdraw()
@@ -25,7 +24,8 @@ else:
         groups = match.groupdict()
         school = io.read_people()
         clazz = school.grade_dict[groups[txt_file.INIT_TXT_GRADE]].class_dict[groups[txt_file.INIT_TXT_FULL_ClASS]]
-        student = assign_code(school, Student(groups[txt_file.INIT_TXT_FIRST_NAME], groups[txt_file.INIT_TXT_LAST_NAME]))
+        student = assign_code(school,
+                              Student(groups[txt_file.INIT_TXT_FIRST_NAME], groups[txt_file.INIT_TXT_LAST_NAME]))
         clazz.add_student(student)
         io.write_people(school=school)
         logger.info(f"Added {name}")

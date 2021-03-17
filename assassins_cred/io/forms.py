@@ -2,7 +2,7 @@ from os.path import join
 
 import gspread
 
-from .. import constants, config
+from .. import constants
 from ..school import School, Grade, Class, Student
 from ..util.google import create_token
 

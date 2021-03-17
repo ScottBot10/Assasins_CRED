@@ -1,7 +1,7 @@
 import importlib
-from .. import config
-from ..school import School
+
 from assassins_cred import logger
+from .. import config
 
 
 class IO:

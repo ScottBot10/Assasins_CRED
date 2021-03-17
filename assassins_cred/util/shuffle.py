@@ -1,9 +1,9 @@
 import random
 import typing as t
 
+from ..constants import school_name
 from ..school import Grade, Student, School
 from ..util.school import students_by_grade, dict_str_student
-from ..constants import school_name
 
 
 def shuffle_school_grade(school: School) -> School:

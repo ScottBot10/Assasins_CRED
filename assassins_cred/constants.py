@@ -1,6 +1,6 @@
 import re
-from os import path
 import string
+from os import path
 
 people_fieldnames = [
     "name",
@@ -15,7 +15,6 @@ people_fieldnames = [
 ]
 
 PROJECT_ROOT = path.normpath(path.abspath(path.join(path.dirname(path.abspath(__file__)), '..')))
-
 
 config_file = path.normpath(path.join(PROJECT_ROOT, "config.yaml"))
 

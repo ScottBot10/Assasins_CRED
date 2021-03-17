@@ -9,9 +9,9 @@ from easyimap.easyimap import MailObj
 # noinspection PyProtectedMember
 from easyimap.easyimap import _parse_email as parse_email
 
-from .constants import Email, EMAIL_FORMAT
+from .constants import EMAIL_FROM_FORMAT
 from .school import Student
-from .util.config import Config
+import config
 
 logger = logging.getLogger("assassins_cred")
 
@@ -70,7 +70,7 @@ def send_to_each(students: t.Sequence[Student],
                  format_kws=None) -> None:
     for student in students:
         send_email(
-            to_address=to_address or f"{student.email}@{Email.email_domain}",
+            to_address=to_address or f"{student.email}@{config.email.domain}",
             from_address=from_address,
             title=title,
             body=body.format(
@@ -85,9 +85,9 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                           mail: MailObj,
                           students: t.Dict[str, Student],
                           from_address: str,
-                          config: Config) -> bool:
-    if mail.title.lower() == Email.email_subject:
-        match = EMAIL_FORMAT.match(mail.from_addr)
+                          config) -> bool:
+    if mail.title.lower() == config.email.subject:
+        match = EMAIL_FROM_FORMAT.match(mail.from_addr)
         if match is not None:
             address = match.groupdict()["address"]
             if address in students:
@@ -98,15 +98,15 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                             send_email(
                                 to_address=student.full_email,
                                 from_address=from_address,
-                                title=Email.Titles.email_success,
-                                body=Email.email_success.format(student=student),
+                                title=config.email.titles.success,
+                                body=config.email.contents.success.format(student=student),
                                 smtp=smtp
                             )
                             send_email(
-                                to_address=config.creds["test_to"] if config.is_test else student.target.full_email,
+                                to_address=config.creds.test_to if config.is_test else student.target.full_email,
                                 from_address=from_address,
-                                title=Email.Titles.email_assassinated,
-                                body=Email.email_assassinated.format(student=student),
+                                title=config.email.titles.assassinated,
+                                body=config.email.contents.assassinated.format(student=student),
                                 smtp=smtp
                             )
                             student.has_killed = True
@@ -117,17 +117,17 @@ def process_incoming_mail(smtp: smtplib.SMTP,
                             send_email(
                                 to_address=student.full_email,
                                 from_address=from_address,
-                                title=Email.Titles.email_failure,
-                                body=Email.email_failure.format(student=student),
+                                title=config.email.titles.failure,
+                                body=config.email.contents.failure.format(student=student),
                                 smtp=smtp
                             )
                             logger.info(f"{student} tried to kill {student.target} but sent the wrong code")
                     else:
                         send_email(
                             to_address=student.full_email,
-                            from_address=config.creds["email"],
-                            title=Email.Titles.email_dead,
-                            body=Email.email_dead.format(student=student),
+                            from_address=config.creds.email,
+                            title=config.email.titles.dead,
+                            body=config.email.contents.dead.format(student=student),
                             smtp=smtp
                         )
                         logger.info(f"{student} tried to kill {student.target} but is already dead")
@@ -152,7 +152,7 @@ def get_mail(smtp: smtplib.SMTP, imap: imaplib.IMAP4, students: t.Dict[str, Stud
                     smtp=smtp,
                     mail=mail,
                     students=students,
-                    from_address=config.creds["email"],
+                    from_address=config.creds.email,
                     config=config
                 )
                 bs.append(b)

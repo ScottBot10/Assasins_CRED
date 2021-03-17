@@ -1,79 +1,43 @@
 import csv
 import logging
+from os.path import join
 
 from .. import constants
-from ..constants import TXT_FORMAT, school_name
+from ..constants import school_name, PROJECT_ROOT
 from ..school import School, Student, Grade, Class
 from ..util.school import to_bool, full_name
 
 logger = logging.getLogger("assassins_cred")
 
-INIT_TXT_FIRST_NAME = "first_name"
-INIT_TXT_LAST_NAME = "surname"
-INIT_TXT_FULL_ClASS = "full_class"
-INIT_TXT_GRADE = "grade"
-INIT_TXT_CLASS = "class"
-
-
-def from_txt(file: str) -> School:
-    """
-    Read from a txt file into :class:`assassins_cred.class_grade.Class` in the format
-        Name Surname(s) Class
-    :param file: The filename of the file
-    :return: a Mapping: class_name to Grade
-    """
-
-    school = School(school_name)
-    grades = {}
-    classes = {}
-
-    with open(file) as f:
-        contents = f.read()
-    for line in contents.splitlines():
-        match = TXT_FORMAT.match(line)
-        logger.debug(match)
-        if match is not None:
-            student = Student(match[INIT_TXT_FIRST_NAME], match[INIT_TXT_LAST_NAME])
-            if match[INIT_TXT_GRADE] not in grades:
-                grade = Grade(int(match[INIT_TXT_GRADE]))
-                grades[match[INIT_TXT_GRADE]] = grade
-                school.add_grade(grade)
-            grade = grades[match[INIT_TXT_GRADE]]
-
-            if match[INIT_TXT_FULL_ClASS] not in classes:
-                clazz = Class(match[INIT_TXT_GRADE], match[INIT_TXT_CLASS])
-                classes[match[INIT_TXT_FULL_ClASS]] = clazz
-                grade.add_class(clazz)
-            clazz = classes.get(match[INIT_TXT_FULL_ClASS])
-            clazz.add_student(student)
-
-    school.rsort()
-
-    return school
-
-
 INIT_CSV_FIRST_NAME = "First name"
+INIT_CSV_MIDDLE_NAMES = "Middle names"
 INIT_CSV_LAST_NAME = "Surname"
 INIT_CSV_GRADE = "Grade"
 INIT_CSV_CLASS = "Class"
 
 
-def from_csv(file: str) -> School:
+def setup(init, **kw):
+    if 'file' in kw:
+        kw['file'] = kw['file']
+    return kw
+
+
+def init_read(file: str) -> School:
     """
     Read from a csv file with a , delimiter into :class:`assassins_cred.class_grade.Class` in the format
         Name, Surname, Grade, Class
     :param file: The filename of the file
     :return: a Mapping: class_name to Grade
     """
-
-    school = School(school_name)
+    school = School(constants.school_name)
     grades = {}
     classes = {}
 
     with open(file) as f:
         csv_reader = csv.DictReader(f)
         for row in csv_reader:
-            student = Student(row[INIT_CSV_FIRST_NAME], row[INIT_CSV_LAST_NAME])
+            student = Student(row[INIT_CSV_FIRST_NAME], row[INIT_CSV_LAST_NAME],
+                              middle_names=row.get(INIT_CSV_MIDDLE_NAMES, '').split())
             if row[INIT_CSV_GRADE] not in grades.keys():
                 grade = Grade(int(row[INIT_CSV_GRADE]))
                 grades[row[INIT_CSV_GRADE]] = grade
@@ -125,8 +89,7 @@ def read_people(file: str) -> School:
         for row in csv_reader:
             if row[CSV_TARGET_NAME] and row[CSV_TARGET_SURNAME]:
                 rows.append(row)
-            student = Student(row[CSV_NAME], row[CSV_SURNAME])
-            student.code = row[CSV_CODE]
+            student = Student(row[CSV_NAME], row[CSV_SURNAME], code=row[CSV_CODE])
             student.is_dead = to_bool(row[CSV_IS_DEAD])
             student.has_killed = to_bool(row[CSV_HAS_KILLED])
 
@@ -157,7 +120,7 @@ def read_people(file: str) -> School:
     return school
 
 
-def write_people(school: School, file: str) -> None:
+def write_people(file: str, school: School) -> None:
     """
     Write to a csv file in the format
             name,class,email,code,target,isdead,haskilled

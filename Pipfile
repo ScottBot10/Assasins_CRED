@@ -14,6 +14,11 @@ pandas = "*"
 matplotlib = "*"
 seaborn = "*"
 sqlalchemy = "*"
+google-api-python-client = "*"
+google-auth-httplib2 = "*"
+google-auth-oauthlib = "*"
+dotenv = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.8"

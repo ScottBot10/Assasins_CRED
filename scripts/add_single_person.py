@@ -2,24 +2,30 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox
 
 from assassins_cred import logger
-from assassins_cred.io import files
+from assassins_cred.io import txt_file
+from assassins_cred.io import IO
+from assassins_cred.filter.gui import set_middle
 from assassins_cred.school import Student
-from assassins_cred.constants import resource_file
+from assassins_cred.util.school import assign_code
+from assassins_cred.constants import resource_file, TXT_FORMAT
 
 root = tk.Tk()
 root.withdraw()
 
-name = simpledialog.askstring("Name", "What is your name, surname and class?\ne.g. Name Surname 10B", parent=root)
+io = IO()
+
+# name = simpledialog.askstring("Name", "What is your name, surname and class?\ne.g. Name Surname 10B", parent=root)
+name = "Seth Ravat 11A"
 if not name:
     messagebox.showerror(message='You did not enter a name!')
     root.destroy()
-    exit()
-
-match = init_read.TXT_FORMAT.match(name)
-if match is not None:
-    groups = match.groups()
-    school = files.read_people(f"../{resource_file}/people.csv")
-    clazz = school.grade_dict[groups[files.INIT_TXT_GRADE]].class_dict[groups[files.INIT_TXT_FULL_ClASS]]
-    clazz.add_student(Student(groups[files.INIT_TXT_FIRST_NAME], groups[files.INIT_TXT_LAST_NAME]))
-    files.write_people(school, f"../{resource_file}/people.csv")
-    logger.info(f"Added {name}")
+else:
+    match = TXT_FORMAT.match(name)
+    if match is not None:
+        groups = match.groupdict()
+        school = io.read_people()
+        clazz = school.grade_dict[groups[txt_file.INIT_TXT_GRADE]].class_dict[groups[txt_file.INIT_TXT_FULL_ClASS]]
+        student = assign_code(school, Student(groups[txt_file.INIT_TXT_FIRST_NAME], groups[txt_file.INIT_TXT_LAST_NAME]))
+        clazz.add_student(student)
+        io.write_people(school=school)
+        logger.info(f"Added {name}")

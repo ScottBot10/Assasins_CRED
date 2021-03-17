@@ -1,7 +1,8 @@
-from assassins_cred.util.stats_logging import StatsLogger
+from assassins_cred import config
 from assassins_cred.constants import resource_file
+from assassins_cred.util.stats_logging import StatsLogger
 
-stats = StatsLogger(f"../{resource_file}/stats_log.json")
+stats = StatsLogger(config.stats_file)
 
 # data = stats.dataframe
 #

@@ -1,10 +1,14 @@
 import logging
+import os
 
 logger = logging.getLogger("assassins_cred")
 logger.setLevel(logging.DEBUG)
 
 stream_handler = logging.StreamHandler()
-file_handler = logging.FileHandler('../logs/assassins_cred.log')
+file = '../logs/assassins_cred.log'
+file = os.path.normpath(os.path.abspath(file))
+os.makedirs(os.path.dirname(file), exist_ok=True)
+file_handler = logging.FileHandler(file, mode='a+')
 
 stream_handler.setLevel(logging.DEBUG)
 file_handler.setLevel(logging.INFO)

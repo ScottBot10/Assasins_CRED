@@ -245,7 +245,7 @@ class Student(school.Student, Base):
 
 
 def setup(init, **kw):
-    file = kw.pop('file', ':memory:')
+    file = kw.pop('url', ':memory:')
     file = file if file == ':memory:' else '/' + file
     engine = create_engine(f"sqlite://{file}")
     Sess = sessionmaker()

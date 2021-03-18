@@ -11,7 +11,7 @@ stats_file: !PATH [ *PROJECT_ROOT,'' ]
 
 io:
   db:
-    file: !PATH [ *PROJECT_ROOT,'' ]
+    url: !PATH [ *PROJECT_ROOT,'' ]
   csv_file:
     file: !PATH [ *PROJECT_ROOT,'' ]
   txt_file:

@@ -6,8 +6,10 @@ import typing as t
 from itertools import combinations
 from typing import TYPE_CHECKING
 
+from googleapiclient.discovery import build
+
 from ..constants import code_length, code_chars
-from ..util.google import create_token, build
+from ..util.google import create_token
 
 if TYPE_CHECKING:
     from ..school import School, Grade, Class, Student

@@ -189,7 +189,7 @@ class Student(school.Student, Base):
     target = relationship("Student", remote_side=[code], post_update=True)
 
     class_name = Column(String, ForeignKey("classes.name"))
-    _email = Column(String)
+    _email = Column("email", String)
 
     def __init__(self, first_name: str, surname: str, middle_names: str = '', email: t.Optional[str] = None,
                  clazz: t.Optional = None, code: t.Optional[str] = None, **kwargs):

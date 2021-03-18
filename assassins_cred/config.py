@@ -88,17 +88,12 @@ with open(config_file, encoding="UTF-8") as f:
 
 
 class YAMLObj(type):
-    def __setattr__(self, key, value):
-        super().__setattr__(key, value)
 
     def __setitem__(self, key, value):
         setattr(self, key, value)
 
-    def __getattr__(cls, name):
-        super().__getattr__(name)
-
     def __getitem__(cls, name):
-        return cls.__getattr__(name)
+        return getattr(cls, name)
 
     def __iter__(cls):
         """Return generator of key: value pairs of current constants class' config values."""
